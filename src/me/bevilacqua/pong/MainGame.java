@@ -140,7 +140,12 @@ public class MainGame extends Canvas implements Runnable {
 				ballX++;
 				ballY++;
 				bright = true; bleft = false;
-				bup = false; bdown = true;
+				if(player1.getY() >= 215) {
+					bup = false; bdown = true;
+				}
+				else if(player1.getY() <= 215) {
+					bup = true; bdown = false;
+				}
 			}
 			else {
 				player2.setScore(player2.getScore() + 5);
@@ -158,7 +163,12 @@ public class MainGame extends Canvas implements Runnable {
 				ballX--;
 				ballY++;
 				bright = false; bleft = true;
-				bup = false; bdown = true;
+				if(player2.getY() >= 215){
+					bup = false; bdown = true;
+				}
+				else if(player2.getY() <= 215){
+					bup = true; bdown = false;
+				}
 			}	
 			else {
 				player1.setScore(player1.getScore() + 5);
