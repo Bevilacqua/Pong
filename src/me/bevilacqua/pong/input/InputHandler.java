@@ -12,6 +12,8 @@ public class InputHandler implements KeyListener {
 		if(e.getKeyCode() == KeyEvent.VK_UP) this.UP = true;
 		if(e.getKeyCode() == KeyEvent.VK_S) this.S = true;
 		if(e.getKeyCode() == KeyEvent.VK_DOWN) this.DOWN = true;
+		if(e.getKeyCode() == KeyEvent.VK_F8) System.exit(0);
+		
 	}
 	
 	public void keyReleased(KeyEvent e) {

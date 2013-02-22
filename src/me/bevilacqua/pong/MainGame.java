@@ -3,6 +3,7 @@ package me.bevilacqua.pong;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -13,7 +14,6 @@ import javax.swing.JOptionPane;
 
 import me.bevilacqua.pong.input.InputHandler;
 import me.bevilacqua.pong.player.Player;
-//import java.awt.image.DataBufferInt;
 
 public class MainGame extends Canvas implements Runnable {
 
@@ -38,6 +38,7 @@ public class MainGame extends Canvas implements Runnable {
 	boolean bleft , bright , bup , bdown; //ball directions
 	private static String p1Name;
 	private static String p2Name;
+	private static boolean isPlaying;
 	
 	MainGame() {
 		setSize(size);
@@ -64,6 +65,7 @@ public class MainGame extends Canvas implements Runnable {
 		long lastTime = System.nanoTime();
 		double nsPerTick = 1000000000D / 60D;
 		
+		isPlaying = true;
 		int ticks = 0;
 		int frames = 0;
 		
@@ -98,6 +100,8 @@ public class MainGame extends Canvas implements Runnable {
 	}
 	
 	private void render() {
+		
+		String WinMessage = " has won!";
 		BufferStrategy bs = getBufferStrategy();
 		if (bs == null) {
 			createBufferStrategy(3);
@@ -105,17 +109,28 @@ public class MainGame extends Canvas implements Runnable {
 		}
 		
 		Graphics g = bs.getDrawGraphics();
-		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-		g.setColor(Color.yellow);
-		g.drawString(player1.getScore() + " - " + player2.getScore(), WIDTH * SCALE / 2, 10);
-		g.setColor(Color.white);
-		g.drawString(p1Name, 10 , player1.getY() + 30);
-		g.fillRect(30, player1.getY(), 10, 50);
-		g.drawString(p2Name , (WIDTH * SCALE - 15) , player2.getY() + 30);
-		g.fillRect(WIDTH * SCALE - 30 , player2.getY(), 10 , 50);
-		g.fillOval(ballX, ballY, 5 , 5);
+		if(isPlaying) {
+			g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+			g.setColor(Color.yellow);
+			g.drawString(player1.getScore() + " - " + player2.getScore(), WIDTH * SCALE / 2, 10);
+			g.setColor(Color.white);
+			g.drawString(p1Name, 10 , player1.getY() + 30);
+			g.fillRect(30, player1.getY(), 10, 50);
+			g.drawString(p2Name , (WIDTH * SCALE - 15) , player2.getY() + 30);
+			g.fillRect(WIDTH * SCALE - 30 , player2.getY(), 10 , 50);
+			g.fillOval(ballX, ballY, 5 , 5);
+		}
+		else {
+			String winner = (player1.getScore() > player2.getScore() ? p1Name : p2Name);
+			g.setColor(Color.white);
+			g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+			g.drawString(winner + WinMessage, WIDTH * SCALE / 2 + 2, HEIGHT * SCALE / 2);
+			g.drawString("Press F8 to Exit!", WIDTH * SCALE / 2 , HEIGHT * SCALE / 2 + 16);
+
+		}
+		
 		g.fillRect(0, 435, 1000, 3);
-		g.drawString("Created by: Jacob Bevilacqua", 25, 465);
+		g.drawString("Created by: Jacob Bevilacqua                                       Controls:  " + p1Name + ": W/S    " + p2Name + ": ArrowKeys     |F8 TO EXIT|", 25, 465);
 		g.dispose();
 		bs.show();
 	}
@@ -123,11 +138,13 @@ public class MainGame extends Canvas implements Runnable {
 	private void tick() {
 		ballTick();
 		if(player1.getY() > 0) if (input.getW() == true) player1.setY(player1.getY() - 2); 
-		if(player1.getY() < 426 )  if (input.getS() == true) player1.setY(player1.getY() + 2);
+		if(player1.getY() < 385)  if (input.getS() == true) player1.setY(player1.getY() + 2);
 		
 		if(player2.getY() > 0) if (input.getUp() == true) player2.setY(player2.getY() - 2); 
-		if(player2.getY() < 426 )	 if (input.getDown() == true) player2.setY(player2.getY() + 2);
+		if(player2.getY() < 385)	 if (input.getDown() == true) player2.setY(player2.getY() + 2);
 		System.out.println(ballX + " " + ballY + " up: " + bup + " down: " + bdown);
+		if(player1.getScore() >= 20 || player2.getScore() >= 20) isPlaying = false; 
+		System.out.println(player1.getScore() + " " + isPlaying);
 	}
 
 	private void ballTick() {
@@ -148,7 +165,7 @@ public class MainGame extends Canvas implements Runnable {
 				}
 			}
 			else {
-				player2.setScore(player2.getScore() + 5);
+				player2.setScore(player2.getScore() + 4);
 				player1.setY(HEIGHT * SCALE / 2);
 				player2.setY(HEIGHT * SCALE / 2);
 				ballX = 39;
@@ -171,7 +188,7 @@ public class MainGame extends Canvas implements Runnable {
 				}
 			}	
 			else {
-				player1.setScore(player1.getScore() + 5);
+				player1.setScore(player1.getScore() + 4);
 				player1.setY(HEIGHT * SCALE / 2);
 				player2.setY(HEIGHT * SCALE / 2);
 				ballX = 39;
@@ -211,7 +228,6 @@ public class MainGame extends Canvas implements Runnable {
 		p2Name = JOptionPane.showInputDialog("Player 2 Enter Your Initials   ");
 		p1Name = p1Name.substring(0, 2);
 		p2Name = p2Name.substring(0, 2);
-		JOptionPane.showConfirmDialog(null, "Controls: P1: W/S     P2: ArrowKeys");
 
 		new MainGame().start();
 	}
